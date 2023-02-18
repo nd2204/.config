@@ -9,6 +9,12 @@ set autoindent
 set encoding=UTF-8
 set mouse=a "enable mouse
 
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'} "Install nopejs >=v14.10.1
@@ -26,18 +32,33 @@ call plug#end()
 "-------------- Remap --------------
 "writing and compiling c code
 map <F8> :w <CR> :terminal gcc % -o %<<CR>
-map <F9> :w <CR> :terminal x86_64-w64-mingw32-gcc % -o %<_x64.exe && ./%<_x64.exe<CR>
+map <F9> :w <CR> :VimuxPromptCommand x86_64-w64-mingw32-gcc % -o %<.exe<CR>
 nmap <C-t> :below terminal<CR> 
 
-"<============ Gruvbox tweak =================>
+"<============ Vimux ===============>
+nnoremap <F5> :VimuxPromptCommand<CR>
+nnoremap <C-F5> :VimuxCloseRunner<CR>
+" Set the default vertical split ratio for Vimux
+let g:VimuxVerticalSplit = 80
+
+" Set the default horizontal split ratio for Vimux
+let g:VimuxHorizontalSplit = 40
+
+" Set the default prompt for Vimux
+let g:VimuxPromptString = "[Enter to run]: "
+
+" Use the current file directory as the default working directory for Vimux
+let g:VimuxProjectRoot = expand('%:p:h')
+
+"<============ Gruvbox =================>
 autocmd vimenter * ++nested colorscheme gruvbox
 
 
-"<============ Airline tweak =================>
+"<============ Airline =================>
 let g:airline_right_sep=''
 let g:airline_left_sep=''
 
-"<============ Nerdtree/Tagbar tweak =================>
+"<============ Nerdtree/Tagbar =================>
 "mapping
 nnoremap <C-f> :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTreeToggle<CR>
